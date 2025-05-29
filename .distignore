@@ -1,0 +1,55 @@
+# WordPress.org distribution exclusion file
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# Node.js & build files
+node_modules/
+package.json
+package-lock.json
+webpack.config.js
+gulpfile.babel.js
+wpgulp.config.js
+Gruntfile.js
+
+# Composer files
+composer.json
+composer.lock
+# vendor/ directory IS included in the ZIP for this plugin, so users don't need to run composer install.
+
+# Test files
+tests/
+phpunit.xml
+phpunit.xml.dist
+.travis.yml
+.gitlab-ci.yml
+
+# Editor/IDE specific files
+.editorconfig
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Log files & temporary files
+*.log
+*.tmp
+
+# Source map files (if not desired in production zip)
+# *.map
+
+# Documentation / Other dev files
+README.md # WordPress.org uses readme.txt
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+
+# Archives (to prevent zipping zips)
+*.zip
+*.tar.gz
+*.rar
+
+# Specific to this plugin if any other dev files/folders
+# example-folder/
+# dev-assets/ 

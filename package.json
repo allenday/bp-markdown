@@ -1,0 +1,16 @@
+{
+  "name": "buddyboss-markdown",
+  "version": "0.1.0",
+  "description": "Adds Markdown support for BuddyBoss Platform content (activities, comments, etc.).",
+  "main": "buddyboss-markdown.php",
+  "scripts": {
+    "start": "npx wp-scripts start",
+    "build": "npx wp-scripts build",
+    "plugin-zip": "npx wp-scripts plugin-zip",
+    "package": "npm run plugin-zip && node -e \"const fs = require('fs'); const pkg = require('./package.json'); fs.renameSync('buddyboss-markdown.zip', 'buddyboss-markdown-' + pkg.version + '.zip'); console.log('Created: buddyboss-markdown-' + pkg.version + '.zip');\""
+  },
+  "author": "Allen Day",
+  "devDependencies": {
+    "@wordpress/scripts": "^27.6.0" 
+  }
+} 
