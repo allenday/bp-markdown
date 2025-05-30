@@ -1,58 +1,58 @@
-=== BuddyBoss Markdown ===
-Contributors: [Your WordPress.org username]
-Donate link: [Your donation link]
-Tags: buddyboss, markdown, editor, activity, comments
+=== BP Markdown ===
+Contributors: your-username
+Tags: buddypress, buddyboss, markdown, content, formatting
 Requires at least: 5.0
-Tested up to: [Latest WordPress version]
+Tested up to: 6.4
+Requires PHP: 7.4
 Stable tag: 0.1.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Adds Markdown support for BuddyBoss Platform content (activities, comments, etc.).
+Adds Markdown support for BuddyPress/BuddyBoss Platform content (activities, comments, etc.).
 
 == Description ==
 
-This plugin enables Markdown editing for various content types within the BuddyBoss Platform, allowing users to format their posts and comments using the simple and intuitive Markdown syntax.
+BP Markdown enables Markdown formatting for BuddyPress and BuddyBoss Platform content, allowing users to write rich-formatted content using simple Markdown syntax.
 
-It leverages the power of the PHP Markdown Extra library for robust Markdown parsing.
+**Features:**
+* Markdown support for activity updates
+* Server-side conversion from Markdown to HTML
+* Stores both original Markdown and rendered HTML
+* Compatible with BuddyPress and BuddyBoss Platform
 
-Currently supported content types:
-
-*   BuddyBoss Activity Updates
-*   BuddyBoss Activity Comments (coming soon)
-
-Future support may include:
-
-*   BuddyBoss Forum Topics & Replies (if applicable)
-*   Other BuddyBoss components
+**Markdown Support Includes:**
+* Headers (# ## ###)
+* Bold and italic text
+* Lists (ordered and unordered)
+* Links and images
+* Code blocks and inline code
+* Tables
+* And more via Markdown Extra syntax
 
 == Installation ==
 
-1.  Upload the `buddyboss-markdown` folder to the `/wp-content/plugins/` directory.
-2.  Activate the plugin through the 'Plugins' menu in WordPress.
-3.  Configure Markdown options via the plugin's settings page (if available in future versions).
+1. Upload the plugin files to the `/wp-content/plugins/bp-markdown` directory, or install the plugin through the WordPress plugins screen directly.
+2. Activate the plugin through the 'Plugins' screen in WordPress.
+3. The plugin will automatically start converting Markdown content in BuddyPress/BuddyBoss activities.
 
 == Frequently Asked Questions ==
 
-= Does this conflict with Jetpack Markdown or bbPress Markdown? =
+= Does this work with BuddyBoss Platform? =
 
-This plugin is specifically designed for BuddyBoss. We will aim to provide options to manage potential overlaps, especially if your BuddyBoss site also uses bbPress for forums.
+Yes! This plugin is designed to work with both BuddyPress and BuddyBoss Platform.
 
 = What Markdown syntax is supported? =
 
-This plugin uses PHP Markdown Extra, which supports standard Markdown syntax plus additional features like tables, fenced code blocks, and more.
+The plugin uses PHP Markdown Extra, which supports standard Markdown plus additional features like tables, definition lists, footnotes, and more.
 
-== Screenshots ==
+= Is existing content affected? =
 
-1. (coming soon)
+No, existing content remains unchanged. Only new content written in Markdown will be processed.
 
 == Changelog ==
 
-= 0.1.0 - YYYY-MM-DD =
-* Initial release.
-* Basic support for BuddyBoss Activity Updates.
-
-== Upgrade Notice ==
-
 = 0.1.0 =
-Initial release. 
+* Initial release
+* Markdown support for activity updates
+* Server-side Markdown to HTML conversion
+* Meta storage for original Markdown content 

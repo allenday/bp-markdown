@@ -1,29 +1,22 @@
 <?php
 /**
- * BuddyBoss Markdown Uninstall
+ * Uninstall BP Markdown
  *
- * Uninstalls the plugin and cleans up options, etc.
- *
- * @package BuddyBossMarkdown
+ * @package BPMarkdown
  * @since 0.1.0
  */
 
-// Exit if accessed directly.
+// If uninstall not called from WordPress, then exit.
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
     exit;
 }
 
-// If you have stored any options, delete them here.
-// Example:
-// delete_option( 'buddyboss_markdown_settings' );
+// Here you can define what happens when the plugin is deleted.
+// For example, you could remove any custom tables, options, or metadata that the plugin created.
 
-// If you have created custom tables, drop them here.
-// Example:
+// Example: Remove all activity meta created by this plugin
 // global $wpdb;
-// $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}my_custom_table" );
+// $wpdb->query( "DELETE FROM {$wpdb->bp_activity_meta} WHERE meta_key = '_bp_activity_markdown_content'" );
 
-// Clear any cached data if necessary.
-
-// Note: Be careful when removing data. Users might not want their Markdown content (if stored separately)
-// to be deleted if they are just temporarily uninstalling the plugin.
-// Consider making data removal an option or a separate process. 
+// Example: Remove plugin options
+// delete_option( 'bp_markdown_settings' ); 

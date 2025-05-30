@@ -1,8 +1,8 @@
 <?php
 /**
- * BuddyBoss Markdown Core Class
+ * BP Markdown Core Class
  *
- * @package BuddyBossMarkdown
+ * @package BPMarkdown
  * @since 0.1.0
  */
 
@@ -13,12 +13,12 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-class BuddyBoss_Markdown_Core {
+class BP_Markdown_Core {
 
     /**
      * The single instance of the class.
      *
-     * @var BuddyBoss_Markdown_Core
+     * @var BP_Markdown_Core
      * @since 0.1.0
      */
     protected static $_instance = null;
@@ -32,13 +32,13 @@ class BuddyBoss_Markdown_Core {
     public $parser = null;
 
     /**
-     * Main BuddyBoss_Markdown_Core Instance.
+     * Main BP_Markdown_Core Instance.
      *
-     * Ensures only one instance of BuddyBoss_Markdown_Core is loaded or can be loaded.
+     * Ensures only one instance of BP_Markdown_Core is loaded or can be loaded.
      *
      * @since 0.1.0
      * @static
-     * @return BuddyBoss_Markdown_Core - Main instance.
+     * @return BP_Markdown_Core - Main instance.
      */
     public static function instance() {
         if ( is_null( self::$_instance ) ) {
@@ -51,7 +51,6 @@ class BuddyBoss_Markdown_Core {
      * Constructor.
      */
     private function __construct() {
-        error_log('[BuddyBoss Markdown] BuddyBoss_Markdown_Core constructor called.');
         $this->setup_parser();
         $this->hooks();
     }
@@ -77,7 +76,7 @@ class BuddyBoss_Markdown_Core {
          * @since 0.1.0
          * @param MarkdownExtra $parser The Markdown parser instance.
          */
-        $this->parser = apply_filters( 'buddyboss_markdown_parser_instance', $this->parser );
+        $this->parser = apply_filters( 'bp_markdown_parser_instance', $this->parser );
     }
 
     /**
@@ -112,7 +111,7 @@ class BuddyBoss_Markdown_Core {
          * @since 0.1.0
          * @param string $markdown The original Markdown content.
          */
-        $markdown = apply_filters( 'buddyboss_markdown_pre_transform', $markdown );
+        $markdown = apply_filters( 'bp_markdown_pre_transform', $markdown );
 
         $html = $this->parser->transform( $markdown );
 
@@ -123,7 +122,7 @@ class BuddyBoss_Markdown_Core {
          * @param string $html The transformed HTML content.
          * @param string $markdown The original Markdown content.
          */
-        $html = apply_filters( 'buddyboss_markdown_post_transform', $html, $markdown );
+        $html = apply_filters( 'bp_markdown_post_transform', $html, $markdown );
 
         return $html;
     }
@@ -133,13 +132,13 @@ class BuddyBoss_Markdown_Core {
      */
     public function enqueue_scripts() {
         // Example: if we add a CSS for styling Markdown output or JS for a client-side editor preview
-        // wp_enqueue_style( 'buddyboss-markdown-frontend', BUDDYBOSS_MARKDOWN_PLUGIN_URL . 'assets/css/frontend.css', array(), BUDDYBOSS_MARKDOWN_VERSION );
-        // wp_enqueue_script( 'buddyboss-markdown-frontend', BUDDYBOSS_MARKDOWN_PLUGIN_URL . 'assets/js/frontend.js', array( 'jquery' ), BUDDYBOSS_MARKDOWN_VERSION, true );
+        // wp_enqueue_style( 'bp-markdown-frontend', BP_MARKDOWN_PLUGIN_URL . 'assets/css/frontend.css', array(), BP_MARKDOWN_VERSION );
+        // wp_enqueue_script( 'bp-markdown-frontend', BP_MARKDOWN_PLUGIN_URL . 'assets/js/frontend.js', array( 'jquery' ), BP_MARKDOWN_VERSION, true );
 
         // Localize script if needed
-        // wp_localize_script( 'buddyboss-markdown-frontend', 'bbMarkdownData', array(
+        // wp_localize_script( 'bp-markdown-frontend', 'bpMarkdownData', array(
         //     'ajax_url' => admin_url( 'admin-ajax.php' ),
-        //     'nonce'    => wp_create_nonce( 'buddyboss_markdown_nonce' )
+        //     'nonce'    => wp_create_nonce( 'bp_markdown_nonce' )
         // ));
     }
 
@@ -148,8 +147,8 @@ class BuddyBoss_Markdown_Core {
      */
     public function enqueue_admin_scripts() {
         // Example: for plugin settings page
-        // wp_enqueue_style( 'buddyboss-markdown-admin', BUDDYBOSS_MARKDOWN_PLUGIN_URL . 'assets/css/admin.css', array(), BUDDYBOSS_MARKDOWN_VERSION );
-        // wp_enqueue_script( 'buddyboss-markdown-admin', BUDDYBOSS_MARKDOWN_PLUGIN_URL . 'assets/js/admin.js', array( 'jquery' ), BUDDYBOSS_MARKDOWN_VERSION, true );
+        // wp_enqueue_style( 'bp-markdown-admin', BP_MARKDOWN_PLUGIN_URL . 'assets/css/admin.css', array(), BP_MARKDOWN_VERSION );
+        // wp_enqueue_script( 'bp-markdown-admin', BP_MARKDOWN_PLUGIN_URL . 'assets/js/admin.js', array( 'jquery' ), BP_MARKDOWN_VERSION, true );
     }
 
     /**

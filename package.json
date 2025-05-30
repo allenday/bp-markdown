@@ -1,16 +1,34 @@
 {
-  "name": "buddyboss-markdown",
+  "name": "bp-markdown",
   "version": "0.1.0",
-  "description": "Adds Markdown support for BuddyBoss Platform content (activities, comments, etc.).",
-  "main": "buddyboss-markdown.php",
-  "scripts": {
-    "start": "npx wp-scripts start",
-    "build": "npx wp-scripts build",
-    "plugin-zip": "npx wp-scripts plugin-zip",
-    "package": "npm run plugin-zip && node -e \"const fs = require('fs'); const pkg = require('./package.json'); fs.renameSync('buddyboss-markdown.zip', 'buddyboss-markdown-' + pkg.version + '.zip'); console.log('Created: buddyboss-markdown-' + pkg.version + '.zip');\""
+  "description": "Adds Markdown support for BuddyPress/BuddyBoss Platform content (activities, comments, etc.).",
+  "author": "Your Name",
+  "license": "GPL-3.0-or-later",
+  "keywords": [
+    "wordpress",
+    "plugin",
+    "buddypress",
+    "buddyboss",
+    "markdown"
+  ],
+  "homepage": "https://github.com/your-username/bp-markdown",
+  "bugs": {
+    "url": "https://github.com/your-username/bp-markdown/issues"
   },
-  "author": "Allen Day",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/bp-markdown.git"
+  },
   "devDependencies": {
-    "@wordpress/scripts": "^27.6.0" 
+    "@wordpress/scripts": "^27.6.0"
+  },
+  "scripts": {
+    "start": "wp-scripts start",
+    "build": "wp-scripts build",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "wp-scripts plugin-zip",
+    "package": "npm run plugin-zip && node -e \"const fs = require('fs'); const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8')); const oldName = 'bp-markdown.zip'; const newName = `bp-markdown-${pkg.version}.zip`; if (fs.existsSync(oldName)) { fs.renameSync(oldName, newName); console.log(`Renamed ${oldName} to ${newName}`); } else { console.log('bp-markdown.zip not found'); }\""
   }
 } 
