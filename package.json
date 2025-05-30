@@ -2,7 +2,7 @@
   "name": "bp-markdown",
   "version": "0.1.0",
   "description": "Adds Markdown support for BuddyPress/BuddyBoss Platform content (activities, comments, etc.).",
-  "author": "Your Name",
+  "author": "Allen Day",
   "license": "GPL-3.0-or-later",
   "keywords": [
     "wordpress",
@@ -11,13 +11,13 @@
     "buddyboss",
     "markdown"
   ],
-  "homepage": "https://github.com/your-username/bp-markdown",
+  "homepage": "https://github.com/allenday/bp-markdown",
   "bugs": {
-    "url": "https://github.com/your-username/bp-markdown/issues"
+    "url": "https://github.com/allenday/bp-markdown/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/bp-markdown.git"
+    "url": "https://github.com/allenday/bp-markdown.git"
   },
   "devDependencies": {
     "@wordpress/scripts": "^27.6.0"

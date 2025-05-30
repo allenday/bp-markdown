@@ -2,9 +2,9 @@
 /**
  * Plugin Name: BP Markdown
  * Description: Adds Markdown support for BuddyPress/BuddyBoss Platform content (activities, comments, etc.).
- * Plugin URI:  [Your Plugin URI]
- * Author:      [Your Name]
- * Author URI:  [Your Author URI]
+ * Plugin URI:  https://github.com/allenday/bp-markdown
+ * Author:      Allen Day
+ * Author URI:  https://github.com/allenday
  * Version:     0.1.0
  * License:     GPLv3 or later
  * Text Domain: bp-markdown

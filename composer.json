@@ -1,14 +1,14 @@
 {
-    "name": "bp-markdown/plugin",
+    "name": "allenday/bp-markdown",
     "description": "Adds Markdown support for BuddyPress/BuddyBoss Platform content",
     "type": "wordpress-plugin",
     "keywords": ["wordpress", "plugin", "buddypress", "buddyboss", "markdown"],
-    "homepage": "https://github.com/your-username/bp-markdown",
+    "homepage": "https://github.com/allenday/bp-markdown",
     "license": "GPL-3.0-or-later",
     "authors": [
         {
-            "name": "Your Name",
-            "email": "your.email@example.com"
+            "name": "Allen Day",
+            "email": "allenday@allenday.com"
         }
     ],
     "require": {

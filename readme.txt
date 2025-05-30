@@ -1,5 +1,5 @@
 === BP Markdown ===
-Contributors: your-username
+Contributors: allenday
 Tags: buddypress, buddyboss, markdown, content, formatting
 Requires at least: 5.0
 Tested up to: 6.4
