@@ -29,6 +29,6 @@
     "lint:js": "wp-scripts lint-js",
     "packages-update": "wp-scripts packages-update",
     "plugin-zip": "wp-scripts plugin-zip",
-    "package": "npm run plugin-zip && node -e \"const fs = require('fs'); const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8')); const oldName = 'bp-markdown.zip'; const newName = `bp-markdown-${pkg.version}.zip`; if (fs.existsSync(oldName)) { fs.renameSync(oldName, newName); console.log(`Renamed ${oldName} to ${newName}`); } else { console.log('bp-markdown.zip not found'); }\""
+    "package": "npm run plugin-zip && node -e \"const fs = require('fs'); const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8')); const oldName = 'bp-markdown.zip'; const newName = 'bp-markdown-' + pkg.version + '.zip'; if (fs.existsSync(oldName)) { fs.renameSync(oldName, newName); console.log('Renamed ' + oldName + ' to ' + newName); } else { console.log('bp-markdown.zip not found'); }\""
   }
 } 
