@@ -82,10 +82,16 @@ class BuddyBoss_Markdown_Activity {
 
     /**
      * Get the Markdown parser instance from the core class.
-     * @return \\Michelf\\MarkdownExtra|null
+     * @return \Michelf\MarkdownExtra|null
      */
     private function get_parser() {
-        return BuddyBoss_Markdown_Core::instance()->parser;
+        $core_parser = BuddyBoss_Markdown_Core::instance()->parser;
+        if ( $core_parser instanceof \Michelf\MarkdownExtra ) {
+            error_log('[BuddyBoss Markdown] BuddyBoss_Markdown_Activity::get_parser() - Returning VALID MarkdownExtra parser instance from Core.');
+        } else {
+            error_log('[BuddyBoss Markdown] BuddyBoss_Markdown_Activity::get_parser() - Parser from Core is NOT a valid MarkdownExtra instance. Type: ' . gettype($core_parser));
+        }
+        return $core_parser;
     }
 
     /**
@@ -101,14 +107,23 @@ class BuddyBoss_Markdown_Activity {
     public function prepare_activity_data_before_add( $args ) {
         error_log('[BuddyBoss Markdown] HOOK: bp_before_activity_add_parse_args CALLED.');
 
-        if ( !isset($args['content']) ) {
-            error_log('[BuddyBoss Markdown] bp_before_activity_add_parse_args - $args[\'content\'] is NOT SET. Skipping.');
+        $raw_markdown_source = 'args'; // Default to $args['content']
+        $raw_markdown = isset($args['content']) ? $args['content'] : '';
+
+        if ( isset( $_POST['content'] ) ) {
+            $raw_markdown = wp_unslash( $_POST['content'] ); // Use wp_unslash as WP often adds slashes
+            $raw_markdown_source = 'POST';
+            error_log('[BuddyBoss Markdown] bp_before_activity_add_parse_args - Using $_POST[\'content\'] as source for raw markdown.');
+        } else if ( !isset($args['content']) ) {
+            error_log('[BuddyBoss Markdown] bp_before_activity_add_parse_args - Neither $_POST[\'content\'] nor $args[\'content\'] is set. Skipping.');
             self::$original_markdown_content = ''; // Ensure it's reset
             return $args;
+        } else {
+            error_log('[BuddyBoss Markdown] bp_before_activity_add_parse_args - Using $args[\'content\'] as source for raw markdown (POST was not set).');
         }
 
-        $raw_markdown = $args['content'];
-        error_log('[BuddyBoss Markdown] bp_before_activity_add_parse_args - Incoming raw content from $args[\'content\']: ' . substr(sanitize_text_field($raw_markdown), 0, 300));
+        error_log('[BuddyBoss Markdown] bp_before_activity_add_parse_args - Source for raw markdown: ' . $raw_markdown_source);
+        error_log('[BuddyBoss Markdown] bp_before_activity_add_parse_args - Captured raw content (JSON encoded): ' . wp_json_encode($raw_markdown));
 
         if ( empty( trim( $raw_markdown ) ) ) {
             error_log('[BuddyBoss Markdown] bp_before_activity_add_parse_args - Raw content is empty. Skipping.');
@@ -118,7 +133,7 @@ class BuddyBoss_Markdown_Activity {
         
         // Store the original raw markdown for other hooks
         self::$original_markdown_content = $raw_markdown;
-        error_log('[BuddyBoss Markdown] bp_before_activity_add_parse_args - Stored to static self::$original_markdown_content: ' . substr(sanitize_text_field(self::$original_markdown_content),0, 300));
+        error_log('[BuddyBoss Markdown] bp_before_activity_add_parse_args - Stored to static self::$original_markdown_content (JSON encoded): ' . wp_json_encode(self::$original_markdown_content));
 
         // DO NOT transform to HTML here. Let it pass through for KSES.
         error_log('[BuddyBoss Markdown] bp_before_activity_add_parse_args - RETURNING original $args (content not transformed yet).');
@@ -126,39 +141,92 @@ class BuddyBoss_Markdown_Activity {
     }
 
     /**
-     * Transforms the activity content to HTML using the stored raw Markdown.
-     * This runs after KSES, so our HTML should be final.
+     * Strip outer <p> tags from content if it's wrapped in a single paragraph
      *
-     * Attached to: bp_activity_content_before_save
-     *
-     * @param string $content The content string (potentially KSES'd).
-     * @return string The transformed HTML content.
+     * @param string $content The content to process
+     * @return string The content with outer <p> tags removed if applicable
+     */
+    private function strip_outer_p_tags( $content ) {
+        $content = trim( $content );
+        error_log( 'strip_outer_p_tags() - Input: ' . wp_json_encode( $content ) );
+        
+        if ( empty( $content ) ) {
+            error_log( 'strip_outer_p_tags() - Content is empty, returning as-is' );
+            return $content;
+        }
+
+        // Create a DOMDocument to parse the HTML
+        $dom = new DOMDocument();
+        
+        // Suppress errors for malformed HTML and use UTF-8 encoding
+        libxml_use_internal_errors( true );
+        $load_result = $dom->loadHTML( '<?xml encoding="UTF-8">' . $content, LIBXML_HTML_NODEFDTD );
+        $errors = libxml_get_errors();
+        libxml_clear_errors();
+        
+        error_log( 'strip_outer_p_tags() - DOM loadHTML result: ' . var_export( $load_result, true ) );
+        if ( ! empty( $errors ) ) {
+            error_log( 'strip_outer_p_tags() - DOM errors: ' . wp_json_encode( array_map( function($e) { return $e->message; }, $errors ) ) );
+        }
+
+        // Get the body element (DOMDocument automatically wraps content in html/body)
+        $body = $dom->getElementsByTagName( 'body' )->item( 0 );
+        
+        if ( ! $body ) {
+            error_log( 'strip_outer_p_tags() - No body element found, returning original content' );
+            return $content; // Fallback if parsing failed
+        }
+        
+        error_log( 'strip_outer_p_tags() - Body childNodes count: ' . $body->childNodes->length );
+        
+        if ( $body->childNodes->length > 0 ) {
+            error_log( 'strip_outer_p_tags() - First child nodeName: ' . $body->firstChild->nodeName );
+        }
+
+        // Check if there's exactly one child element and it's a <p> tag
+        if ( $body->childNodes->length === 1 && $body->firstChild->nodeName === 'p' ) {
+            error_log( 'strip_outer_p_tags() - Found single <p> tag, extracting inner content' );
+            // Get the inner content of the <p> tag
+            $inner_html = '';
+            foreach ( $body->firstChild->childNodes as $child ) {
+                $inner_html .= $dom->saveHTML( $child );
+            }
+            $result = trim( $inner_html );
+            error_log( 'strip_outer_p_tags() - Extracted inner content: ' . wp_json_encode( $result ) );
+            return $result;
+        }
+
+        // If it's not a single <p> tag, return original content
+        error_log( 'strip_outer_p_tags() - Not a single <p> tag, returning original content' );
+        return $content;
+    }
+
+    /**
+     * Transform content for database storage (markdown to HTML)
      */
     public function transform_content_for_database( $content ) {
-        error_log('[BuddyBoss Markdown] HOOK: bp_activity_content_before_save CALLED.');
-        error_log('[BuddyBoss Markdown] bp_activity_content_before_save - Incoming content (potentially KSES\'d from original): ' . substr(sanitize_text_field($content), 0, 300));
-
-        if ( empty(self::$original_markdown_content) ) {
-            error_log('[BuddyBoss Markdown] bp_activity_content_before_save - self::$original_markdown_content is EMPTY. Cannot transform. Returning $content as is.');
-            return $content;
-        }
-
-        $raw_markdown_to_transform = self::$original_markdown_content;
-        error_log('[BuddyBoss Markdown] bp_activity_content_before_save - Using self::$original_markdown_content for transformation: ' . substr(sanitize_text_field($raw_markdown_to_transform), 0, 300));
+        error_log( 'transform_content_for_database() - Raw content: ' . wp_json_encode( $content ) );
         
-        $parser = $this->get_parser();
-        if ( ! $parser ) {
-            error_log('[BuddyBoss Markdown] bp_activity_content_before_save - Parser NOT available. Returning original $content unchanged.');
-            // Potentially clear self::$original_markdown_content if it won't be used by save_original_markdown_after_activity_save
-            // For now, let's leave it for the after_save hook.
+        // Only transform if we have stored markdown content
+        if ( empty( self::$original_markdown_content ) ) {
+            error_log( 'transform_content_for_database() - No stored markdown content, returning as-is' );
             return $content;
         }
-
-        // Transform the original raw markdown to HTML
-        $html_content = $parser->transform( $raw_markdown_to_transform );
-        error_log('[BuddyBoss Markdown] bp_activity_content_before_save - Transformed original markdown to HTML: ' . substr(sanitize_text_field($html_content), 0, 300));
-        error_log('[BuddyBoss Markdown] bp_activity_content_before_save - RETURNING this new HTML content to be saved.');
-        return $html_content; 
+        
+        // Strip outer <p> tags before processing
+        $stripped_content = $this->strip_outer_p_tags( self::$original_markdown_content );
+        error_log( 'transform_content_for_database() - After stripping p tags: ' . wp_json_encode( $stripped_content ) );
+        
+        $parser = BuddyBoss_Markdown_Core::instance()->parser;
+        if ( ! $parser ) {
+            error_log( 'transform_content_for_database() - Parser is null!' );
+            return $content;
+        }
+        
+        $html_content = $parser->transform( $stripped_content );
+        error_log( 'transform_content_for_database() - Parser output: ' . wp_json_encode( $html_content ) );
+        
+        return $html_content;
     }
 
     /**
@@ -182,14 +250,14 @@ class BuddyBoss_Markdown_Activity {
         }
 
         if ( isset( self::$original_markdown_content ) && self::$original_markdown_content !== null ) {
-            $markdown_to_save = self::$original_markdown_content;
-            error_log('[BuddyBoss Markdown] bp_activity_after_save - Found static content. Length: ' . strlen($markdown_to_save) . ' chars. Content: ' . substr(sanitize_text_field($markdown_to_save), 0, 200) . ' for activity ID: ' . $activity->id);
+            // Strip outer <p> tags before saving to meta
+            $clean_markdown = $this->strip_outer_p_tags( self::$original_markdown_content );
+            error_log( 'save_original_markdown_after_activity_save() - Saving to meta: ' . wp_json_encode( $clean_markdown ) );
             
-            error_log('[BuddyBoss Markdown] bp_activity_after_save - BEFORE calling bp_activity_update_meta. Activity ID: ' . $activity->id . ', Meta Key: ' . self::ACTIVITY_META_KEY . ', Value to save: ' . substr(sanitize_text_field($markdown_to_save), 0, 200));
-            $meta_update_result = bp_activity_update_meta( $activity->id, self::ACTIVITY_META_KEY, $markdown_to_save );
-            error_log('[BuddyBoss Markdown] bp_activity_after_save - AFTER calling bp_activity_update_meta. Result: ' . var_export($meta_update_result, true) . ' for activity ID: ' . $activity->id);
+            $result = bp_activity_update_meta( $activity->id, self::ACTIVITY_META_KEY, $clean_markdown );
+            error_log( 'save_original_markdown_after_activity_save() - bp_activity_update_meta result: ' . $result );
 
-            if ($meta_update_result) {
+            if ($result) {
                 error_log('[BuddyBoss Markdown] bp_activity_after_save - Meta successfully UPDATED for activity ID: ' . $activity->id);
             } else {
                 error_log('[BuddyBoss Markdown] bp_activity_after_save - Meta update FAILED or returned falsy for activity ID: ' . $activity->id);
